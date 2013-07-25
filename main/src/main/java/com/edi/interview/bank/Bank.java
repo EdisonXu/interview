@@ -29,6 +29,7 @@ public class Bank {
         {
             currentServiceWindows++;
             new Thread(threadGroup, sw, "Windows"+currentServiceWindows).start();
+            System.out.println("Open window " + currentServiceWindows);
         }
         this.threadGroup.notifyAllThread();
     }
@@ -58,6 +59,7 @@ public class Bank {
     public void close()
     {
         closed = true;
+        System.out.println("Waiting windows to finish services");
         while(true)
         {
             if(ServiceWindows.waitingQueue.size()==0 && this.threadGroup.isAwaiting())
@@ -122,11 +124,15 @@ public class Bank {
     public static void main(String[] args) {
         Bank b = new Bank();
         b.open();
+        
+        // wait for the 1st customer
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        
+        // begin to handle the first 30 customers
         for(int i=0;i<30;i++)
         {
             b.getTicketAndWait();
@@ -137,6 +143,8 @@ public class Bank {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        
+        // begin to handle the coming 70 customers
         for(int i=0;i<99;i++)
         {
             b.getTicketAndWait();
